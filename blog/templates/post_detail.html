@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}
+{{ post.title_tag }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+
+    <div class="card" style="width: 18rem;">
+        {% if post.post_image %}
+            <img class="card-img-top" src="{{ post.post_image.url }}" alt="Card image cap">
+        {% endif %}
+        <div class="card-body">
+            <h5 class="card-title">{{ profile.author.first_name }} {{ profil.author.last_name }}</h5>
+            {% if post.author.profile.bio %}
+                <p class="card-text">{{ post.author.profile.bio }}</p>
+            {% else %}
+                <p class="card-text">Tell this guy to make a bio!</p>
+            {% endif %}
+
+            {% if post.author.profile.website %}
+                <a href="{{ post.author.profile.website }}" class="btn btn-primary">Visit Profile</a>
+            {% else %}
+                <a href="#" class="btn btn-primary">No Profile Setup</a>
+            {% endif %}
+        </div>
+
+        <form action="{% url 'like-post' post.pk %}" method="post">
+            {% csrf_token %}
+            {% if user.is_authenticated %}
+                {% if user in post.likes.all %}
+                    <button class="btn btn-danger" type="submit" name="post_id">Dislike</button>
+                {% else %}
+                    <button class="btn btn-success" type="submit" name="post_id">Like</button>
+                {% endif %}
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to like/dislike this post</p>
+            {% endif %}
+        </form>
+
+        {{ post.likes.count }}
+    </div>
+
+    <div>
+    {{ post.body }}
+    </div>
+    <p>{{ post.author }}</p>
+    <p>{{ post.post_date }}</p>
+{% endblock %}
